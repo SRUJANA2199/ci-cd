@@ -17,6 +17,9 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,9 +32,17 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
+        id: image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy:
+    needs: publish
+
+    uses: ./.github/workflows/deploy.yml
+
+    secrets: inherit
