@@ -17,35 +17,35 @@ jobs:
 
     steps:
       - name: Log in to GHCR
-        shell: C:\Windows\System32\cmd.exe
+        shell: cmd
         run: echo %GITHUB_TOKEN%| docker login ghcr.io --username %GITHUB_ACTOR% --password-stdin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull image from GHCR
-        shell: C:\Windows\System32\cmd.exe
+        shell: cmd
         run: docker pull ghcr.io/srujana2199/ci-cd:${{ github.sha }}
 
       - name: Stop old container
-        shell: C:\Windows\System32\cmd.exe
+        shell: cmd
         run: |
           docker stop ci-cd-practice-local 2>NUL
           docker rm ci-cd-practice-local 2>NUL
           exit /b 0
 
       - name: Start new container
-        shell: C:\Windows\System32\cmd.exe
+        shell: cmd
         run: docker run --detach --name ci-cd-practice-local --publish 127.0.0.1:8080:80 ghcr.io/srujana2199/ci-cd:${{ github.sha }}
 
       - name: Verify container
-        shell: C:\Windows\System32\cmd.exe
+        shell: cmd
         run: docker ps --filter "name=ci-cd-practice-local"
 
       - name: Verify Nginx
-        shell: C:\Windows\System32\cmd.exe
+        shell: cmd
         run: docker exec ci-cd-practice-local nginx -t
 
       - name: Log out from GHCR
         if: always()
-        shell: C:\Windows\System32\cmd.exe
+        shell: cmd
         run: docker logout ghcr.io
