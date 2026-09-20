@@ -1,11 +1,7 @@
 name: Deploy to Docker Desktop
 
 on:
-  workflow_run:
-    workflows:
-      - Publish Docker Image
-    types:
-      - completed
+  workflow_call:
 
 permissions:
   contents: read
@@ -13,8 +9,6 @@ permissions:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
     runs-on:
       - self-hosted
       - Windows
@@ -30,7 +24,7 @@ jobs:
 
       - name: Pull image from GHCR
         shell: cmd
-        run: docker pull ghcr.io/srujana2199/ci-cd:${{ github.event.workflow_run.head_sha }}
+        run: docker pull ghcr.io/srujana2199/ci-cd:${{ github.sha }}
 
       - name: Stop old container
         shell: cmd
@@ -41,7 +35,7 @@ jobs:
 
       - name: Start new container
         shell: cmd
-        run: docker run --detach --name ci-cd-practice-local --publish 127.0.0.1:8080:80 ghcr.io/srujana2199/ci-cd:${{ github.event.workflow_run.head_sha }}
+        run: docker run --detach --name ci-cd-practice-local --publish 127.0.0.1:8080:80 ghcr.io/srujana2199/ci-cd:${{ github.sha }}
 
       - name: Verify container
         shell: cmd
